@@ -21,10 +21,18 @@ message UserEntry {
 }
 
 message NewOtrMessage {
+    enum Priority {
+      // 0 is reserved for errors
+      LOW_PRIORITY = 1;
+      HIGH_PRIORITY = 2;
+    };
     required ClientId  sender      = 1;
     repeated UserEntry recipients  = 2;
     optional bool      native_push = 3 [default = true];
     optional bytes     blob        = 4;
+    optional Priority  native_priority = 5;
+    optional bool      transient   = 6;
+    repeated UserId    report_missing = 7;
 }
 
 message OtrAssetMeta {
