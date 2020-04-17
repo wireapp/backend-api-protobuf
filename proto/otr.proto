@@ -32,7 +32,7 @@ message NewOtrMessage {
     optional bytes     blob        = 4;
     optional Priority  native_priority = 5;
     optional bool      transient   = 6;
-    optional UserId    report_missing = 7;
+    repeated UserId    report_missing = 7;
 }
 
 message OtrAssetMeta {
