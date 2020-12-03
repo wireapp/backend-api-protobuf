@@ -1,5 +1,9 @@
 .idea
-package-lock.json
 target/*
 */target/*
 ./idea/*
+
+## Web
+package-lock.json
+node_modules/
+web/Protobuf.*

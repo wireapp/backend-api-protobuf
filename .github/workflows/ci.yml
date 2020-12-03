@@ -1,0 +1,39 @@
+name: Test, Build & Release
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  test_build_deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 'Checkout repository'
+        uses: actions/checkout@v2
+
+      - name: 'Extend environment variables'
+        run: |
+          echo "BRANCH_NAME=$(git branch --show-current)" >> $GITHUB_ENV
+
+      - name: 'Build & Test'
+        run: yarn && yarn dist && yarn test
+
+      - name: 'Authenticate with GitHub (to commit new tag)'
+        if: env.BRANCH_NAME == 'master'
+        env:
+          GH_TOKEN: ${{secrets.OTTO_THE_BOT_GH_TOKEN}}
+        run: echo -e "machine github.com\n  login ${GH_TOKEN}" > ~/.netrc
+
+      - name: 'Authenticate with npm registry (to publish new version)'
+        if: env.BRANCH_NAME == 'master'
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${{secrets.WEBTEAM_NPM_TOKEN}}" >> "${HOME}/.npmrc"
+          git config --global user.email webapp+travis@wire.com
+          git config --global user.name "Wire Travis CI"
+
+      - name: 'Release new version'
+        if: env.BRANCH_NAME == 'master'
+        run: yarn version --minor
